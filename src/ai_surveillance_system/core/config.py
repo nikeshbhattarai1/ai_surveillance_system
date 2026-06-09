@@ -47,11 +47,18 @@ class Settings(BaseSettings):
     MODEL_PATH: Path = Path("models/violence_detection.pt")
     CONFIDENCE_THRESHOLD: float = Field(default=0.75, ge=0.0, le=1.0)
 
-    # Notifications
+    # Notifications - Twilio (WhatsApp)
     TWILIO_ACCOUNT_SID: str = ""
     TWILIO_AUTH_TOKEN: str = ""
     TWILIO_WHATSAPP_FROM: str = ""
     ALERT_PHONE_NUMBER: str = ""
+
+    # Notification - Email (SMTP)
+    ALERT_EMAIL: str = ""
+    SMTP_HOST: str = "localhost"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = "" 
 
     @field_validator("SECRET_KEY")
     @classmethod
