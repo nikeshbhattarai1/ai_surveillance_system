@@ -1,55 +1,56 @@
 from typing import Optional
-from datetime import datetime, timezone
-from fastapi import APIRouter, Query, HTTPException, status
-from pydantic import BaseModel
 
-from ai_surveillance_system.core.logger import get_logger
+from fastapi import APIRouter, Query, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
-logger = get_logger(__name__)
+from ai_surveillance_system.db.session import get_db
+from ai_surveillance_system.schemas.detection import DetectionListResponse, DetectionResponse
+from ai_surveillance_system.services.detection_service import detection_service
+
 router = APIRouter(prefix="/api/v1", tags=["Detections"])
-
-
-class DetectionResponse(BaseModel):
-    id: str
-    job_id: str
-    event_type: str
-    confidence: float
-    frame_path: Optional[str]
-    timestamp: datetime
-    notified: bool
 
 
 @router.get(
     "/detections",
-    response_model=list[DetectionResponse],
-    summary="List all detection events.",
+    response_model=DetectionListResponse,
+    summary="List all detection events",
 )
 async def get_detections(
     job_id: Optional[str] = Query(None, description="Filter by video job ID"),
     event_type: Optional[str] = Query(
-        None, description="Filter by event type (e.g, 'violence')"),
+        None, description="Filter by event type (e.g. 'violence')"),
     limit: int = Query(50, ge=1, le=500, description="Max results to return"),
-    offset: int = Query(0, ge=0, description="Pagination offset")
+    offset: int = Query(0, ge=0, description="Pagination offset"),
+    db: AsyncSession = Depends(get_db),
 ):
-    """
-    Returns security detection events.
-    """
-
-    # TODO: Fetch detection events from database
-    raise HTTPException(status_code=501, detail="Not implemented yet")
-
+    total, items = await detection_service.get_detections(
+        db,
+        job_id=job_id,
+        event_type=event_type,
+        limit=limit,
+        offset=offset,
+    )
+    return DetectionListResponse(
+        total=total,
+        items=items,
+        limit=limit,
+        offset=offset,
+    )
 
 
 @router.get(
     "/detections/{detection_id}",
     response_model=DetectionResponse,
-    summary="Get a single detection event by ID"
+    summary="Get a single detection event by ID",
 )
-async def get_detection(detection_id: str):
-    """
-    Fetch details of a single detection event.
-    """
-
-    # TODO: Fetch detection event by ID from database
-    raise HTTPException(status_code=501, detail="Not implemented yet")
-
+async def get_detection(
+    detection_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    event = await detection_service.get_detection_by_id(detection_id, db)
+    if not event:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Detection '{detection_id}' not found",
+        )
+    return event
