@@ -12,7 +12,7 @@ logger = get_logger(__name__)
 
 CLASS_LABELS: dict[int, str] = {
     0: "violence",
-    1: "normal",
+    1: "nonviolence",
 }
 
 # Indices that represent an actionable threat

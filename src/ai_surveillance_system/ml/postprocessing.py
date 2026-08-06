@@ -17,11 +17,13 @@ settings = get_settings()
 # DB EventType string values
 LABEL_TO_EVENT_TYPE: dict[str, str] = {
     "violence": "violence",
-    "normal":   "normal",
+    "nonviolence":   "normal",
     # Add "fire": "fire" etc. when the model is extended
 }
 
 # Result dataclass
+
+
 @dataclass
 class ProcessedDetection:
     label: str
@@ -105,6 +107,8 @@ def save_evidence_frames(
     return saved_paths
 
 # Per-clip postprocessing
+
+
 def postprocess(
     inference_result: InferenceResult,
     raw_frames: Optional[list[np.ndarray]] = None,
@@ -214,10 +218,10 @@ def aggregate_clip_results(
         f"max confidence seen={max_conf:.3f}"
     )
     return ProcessedDetection(
-        label="normal",
+        label="nonviolence",
         confidence=max_conf,
         is_threat=False,
-        event_type=LABEL_TO_EVENT_TYPE["normal"],
+        event_type=LABEL_TO_EVENT_TYPE["nonviolence"],
         frame_paths=[],
         frame_number=None,
         all_probabilities={},
