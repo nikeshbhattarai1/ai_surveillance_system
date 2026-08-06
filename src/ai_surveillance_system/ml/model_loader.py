@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import pathlib as Path
+from pathlib import Path
 from threading import Lock
 from typing import Optional
 
