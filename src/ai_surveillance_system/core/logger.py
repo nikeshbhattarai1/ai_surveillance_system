@@ -50,7 +50,9 @@ def setup_logger(name: str = "ai_surveillance", debug: bool = False) -> logging.
 _logger_instance: logging.Logger | None = None
 
 
-def get_logger(debug: bool = False) -> logging.Logger:
+def get_logger(name: str = "ai_surveillance",
+               debug: bool = False
+               ) -> logging.Logger:
     """
     Singleton logger instance
     """
@@ -58,5 +60,5 @@ def get_logger(debug: bool = False) -> logging.Logger:
     global _logger_instance
 
     if _logger_instance is None:
-        _logger_instance = setup_logger(debug=debug)
+        _logger_instance = setup_logger(name=name, debug=debug)
     return _logger_instance
