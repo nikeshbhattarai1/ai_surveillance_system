@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     FRAMES_DIR: Path = Path("storage/frames")
     MAX_UPLOAD_SIZE_MB: int = Field(default=500, ge=1, le=5000)
 
+    # Redis
+    REDIS_URL: str = "redis://localhost:6379/0"
+
     # ML
     MODEL_PATH: Path = Path("models/violence_detection.pt")
     CONFIDENCE_THRESHOLD: float = Field(default=0.75, ge=0.0, le=1.0)
