@@ -20,10 +20,17 @@ class VideoStatus(str, enum.Enum):
 
 class EventType(str, enum.Enum):
     VIOLENCE = "violence"
+    NORMAL = "normal"
     ANOMALY = "anomaly"
     INTRUSION = "intrusion"
     FIRE = "fire"
     UNKNOWN = "unknown"
+
+
+class UserRole(str, enum.Enum):
+    ADMIN = "admin"
+    OPERATOR = "operator"
+    VIEWER = "viewer"
 
 
 class VideoJob(Base):
@@ -114,3 +121,33 @@ class DetectionEvent(Base):
 
     def __repr__(self):
         return f"<DetectionEvent id={self.id} type={self.event_type} conf={self.confidence:.2f}>"
+
+
+class User(Base):
+    """
+    System user. Roles control what each user can do
+    """
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(
+        UUID(as_uuid=False), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    email: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=False, index=True
+    )
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+    full_name: Mapped[str] = mapped_column(String(255), nullable=True)
+    role: Mapped[UserRole] = mapped_column(
+        SAEum(UserRole), default=UserRole.OPERATOR, nullable=False
+    )
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, default=True, nullable=False)
+    last_login: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
+
+    def __repr__(self):
+        return f"<User email={self.email} role={self.role}>"
