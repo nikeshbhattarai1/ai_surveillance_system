@@ -4,6 +4,8 @@ from fastapi import APIRouter, Query, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ai_surveillance_system.db.session import get_db
+from ai_surveillance_system.api.deps import require_role
+from ai_surveillance_system.db.models import User, UserRole
 from ai_surveillance_system.schemas.detection import DetectionListResponse, DetectionResponse
 from ai_surveillance_system.services.detection_service import detection_service
 
@@ -54,3 +56,17 @@ async def get_detection(
             detail=f"Detection '{detection_id}' not found",
         )
     return event
+
+@router.delete(
+    "/detections/{detection_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a detection event",
+)
+async def delete_detection(
+    detection_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.ADMIN, UserRole.OPERATOR)),
+):
+    deleted = await detection_service.delete_detection(detection_id, db)
+    if not deleted:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Detection '{detection_id}' not found")
