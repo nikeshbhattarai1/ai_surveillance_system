@@ -1,0 +1,17 @@
+.git
+.env
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+node_modules
+frontend/dist
+.venv
+venv
+logs/
+storage/
+models/
+notebooks/
+*.egg-info
+.DS_Store
