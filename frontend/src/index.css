@@ -1,0 +1,142 @@
+:root {
+  --bg-void: #090b0e;
+  --bg-panel: #0d1117;
+  --bg-raised: #131920;
+  --bg-border: #1e2a35;
+
+  --green-threat: #00ff41;
+  --green-dim: #00aa2b;
+  --green-glow: rgba(0, 255, 65, 0.15);
+
+  --amber-warn: #ffb700;
+  --amber-dim: #a87800;
+  --amber-glow: rgba(255, 183, 0, 0.15);
+
+  --blue-clear: #38bdf8;
+  --blue-dim: #1a6fa8;
+  --blue-glow: rgba(56, 189, 248, 0.12);
+
+  --red-critical: #ff2d55;
+  --red-glow: rgba(255, 45, 85, 0.2);
+
+  --text-primary: #c8d8e8;
+  --text-secondary: #5a7a96;
+  --text-dim: #2e4a5e;
+
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --scanline-opacity: 0.025;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, var(--scanline-opacity)) 2px,
+      rgba(0, 0, 0, var(--scanline-opacity)) 4px);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-panel);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-border);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.display {
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+}
+
+@keyframes pulse-green {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--green-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+@keyframes pulse-red {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes sweep {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: var(--target-width, 100%);
+  }
+}
