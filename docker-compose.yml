@@ -28,7 +28,7 @@ services:
       retries: 10
     restart: unless-stopped
 
- # FastAPI
+  # FastAPI
   api:
     build:
       context: .
@@ -88,6 +88,25 @@ services:
     depends_on:
       - api
     restart: unless-stopped
+
+  # Test runner — run explicitly, not part of normal `docker compose up`
+  test:
+    build:
+      context: .
+      target: test
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-sentinel}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/surveillance
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    profiles:
+      - test
 
 volumes:
   postgres_data:
