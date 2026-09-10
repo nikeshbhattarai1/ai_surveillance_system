@@ -15,7 +15,20 @@ COPY pyproject.toml .
 COPY src/ ./src/
 RUN pip install --no-cache-dir .
 
-# Stage 2: Frontend build
+# Stage 2: Test image (adds dev deps + tests, built on top of python-deps)
+FROM python-deps AS test
+
+WORKDIR /app
+
+# Install dev/test dependencies on top of the already-installed package
+RUN pip install --no-cache-dir ".[dev]"
+
+# Bring in the test suite (kept out of the runtime image)
+COPY tests/ ./tests/
+
+CMD ["pytest", "-v"]
+
+# Stage 3: Frontend build
 FROM node:20-alpine AS frontend-build
 
 WORKDIR /frontend
@@ -26,7 +39,7 @@ COPY frontend/ .
 RUN npm run build
 # Output: /frontend/dist
 
-# Stage 3: Final image (FastAPI app)
+# Stage 4: Final image (FastAPI app)
 FROM python:3.11-slim AS final
 
 WORKDIR /app
@@ -58,7 +71,7 @@ CMD ["uvicorn", "ai_surveillance_system.main:app", \
     "--host", "0.0.0.0", "--port", "8000", \
     "--workers", "1"]
 
-# Stage 4: Nginx serving the built frontend
+# Stage 5: Nginx serving the built frontend
 FROM nginx:alpine AS nginx-final
 
 COPY --from=frontend-build /frontend/dist /usr/share/nginx/html
