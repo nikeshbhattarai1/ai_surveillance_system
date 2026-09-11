@@ -36,7 +36,7 @@ COPY frontend/package.json frontend/package-lock.json* ./
 RUN npm ci --silent
 
 COPY frontend/ .
-RUN npm run build
+RUN node node_modules/vite/bin/vite.js build
 # Output: /frontend/dist
 
 # Stage 4: Final image (FastAPI app)
